@@ -2,6 +2,7 @@ import discord
 import requests
 import imasparql
 import env.token
+import dmm
 
 async def embed(id):
     response = requests.get("https://www.dlsite.com/home/product/info/ajax?product_id=%s" %id).json()
@@ -82,5 +83,9 @@ async def on_message(message):
         else:
             await message.channel.send("声優さんの検索に失敗しちゃいました・・・")
 
+    if message_l[0] == '/dmm':
+        
+        result = dmm.dmm_affiliate(message_l[1])
+        await message.channel.send(result)
 
 client.run(env.token.TOKEN)
