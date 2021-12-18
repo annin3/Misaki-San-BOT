@@ -2,7 +2,16 @@ import discord
 import requests
 import imasparql
 import env.token
+import env.userID
+import env.chanelID
 import dmm
+import TASMRS.get_text
+
+def download_img(url, file_name):
+    r = requests.get(url, stream=True)
+    if r.status_code == 200:
+        with open(file_name, 'wb') as f:
+            f.write(r.content)
 
 async def embed(id):
     response = requests.get("https://www.dlsite.com/home/product/info/ajax?product_id=%s" %id).json()
@@ -68,6 +77,14 @@ client = discord.Client()
 
 @client.event
 async def on_message(message):
+    if (message.author.id == env.userID.culoto) & (message.channel.id == env.chanelID.tachibana_asmr):
+        download_img(message.attachments[0].url, "images/image.png")
+        print("downloaded")
+        search_name, result, date = TASMRS.get_text.get_text("images/image.png")
+        print(search_name, result, date)
+        if (search_name != "") & (result == False):
+            await message.channel.send("観測ご苦労さまです！\n%s時点で「%s」さんに関する音声作品はないようですね・・・" %(date, search_name))
+    
     message_l = message.content.split()
     if message_l[0] == '/asmr':
         await search_asmr(message_l[1], message)
@@ -84,7 +101,6 @@ async def on_message(message):
             await message.channel.send("声優さんの検索に失敗しちゃいました・・・")
 
     if message_l[0] == '/dmm':
-        
         result = dmm.dmm_affiliate(message_l[1])
         await message.channel.send(result)
 
