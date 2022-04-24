@@ -50,7 +50,7 @@ async def search_asmr(name, message):
             await message.channel.send(ans)
             for l in list[0:3]:
                 id = l["product_id"]
-                await message.channel.send(embed = await embed(id))       
+                await message.channel.send(embed = await embed(id))
     else:
         print("通信に失敗しちゃいました・・・")
 
@@ -59,7 +59,7 @@ async def search_asmr_will(name, message):
     if response.status_code == 200:
         list = response.json()
         if len(list) == 0:
-           
+
             await message.channel.send("%sさんに関する発売予定の音声作品は見つかりませんでした・・・" %name)
         else :
             ans = "なんとっ！%sさんに関する発売予定の音声作品が%d件見つかりました！\n" %(name,len(list))
@@ -68,7 +68,7 @@ async def search_asmr_will(name, message):
             await message.channel.send(ans)
             for l in list[0:3]:
                 id = l["product_id"]
-                await message.channel.send(embed = await embed(id))          
+                await message.channel.send(embed = await embed(id))
     else:
         print("通信に失敗しちゃいました・・・")
 
@@ -84,11 +84,11 @@ async def on_message(message):
         print(search_name, result, date)
         if (search_name != "") & (result == False):
             await message.channel.send("観測ご苦労さまです！\n%s時点で「%s」さんに関する音声作品はないようですね・・・" %(date, search_name))
-    
+
     message_l = message.content.split()
     if message_l[0] == '/asmr':
-        await search_asmr(message_l[1], message)
-        await search_asmr_will(message_l[1], message)
+        await search_asmr(" ".join(message_l[1:]), message)
+        await search_asmr_will(" ".join(message_l[1:]), message)
 
     if message_l[0] == '/idol_asmr':
         cv_name = imasparql.get_idol_cv(message_l[1])
@@ -101,7 +101,7 @@ async def on_message(message):
             await message.channel.send("声優さんの検索に失敗しちゃいました・・・")
 
     if message_l[0] == '/dmm':
-        result = dmm.dmm_affiliate(message_l[1])
+        result = dmm.dmm_affiliate(" ".join(message_l[1:]))
         await message.channel.send(result)
 
 client.run(env.token.TOKEN)
