@@ -6,6 +6,7 @@ import datetime
 from google.cloud import vision
 
 def get_result(output):
+    print(output)
     list = output.split()
 
     search_name = ""
@@ -22,7 +23,7 @@ def get_result(output):
 
     d_week = {'Sun': '日', 'Mon': '月', 'Tue': '火', 'Wed': '水', 'Thu': '木', 'Fri': '金', 'Sat': '土'}
     w = d_week[date.strftime('%a')]
-    d = date.strftime('%Y年%m月%d日') + f'（{w}）' + date.strftime('%H:%M')
+    d = date.strftime('%Y年%m月%d日') + f'({w})' + date.strftime('%H:%M')
     return search_name, result, d
 
 def get_text(path):

@@ -3,7 +3,7 @@ import requests
 import imasparql
 import env.token
 import env.userID
-import env.chanelID
+import env.channelID
 import dmm
 import TASMRS.get_text
 
@@ -77,31 +77,36 @@ client = discord.Client()
 
 @client.event
 async def on_message(message):
-    if (message.author.id == env.userID.culoto) & (message.channel.id == env.chanelID.tachibana_asmr):
+    message_l = message.content.split()
+    try:
+        if message_l[0] == '/asmr':
+            await search_asmr(" ".join(message_l[1:]), message)
+            await search_asmr_will(" ".join(message_l[1:]), message)
+
+        if message_l[0] == '/idol_asmr':
+            cv_name = imasparql.get_idol_cv(message_l[1])
+            if cv_name != None:
+                print(cv_name)
+                await message.channel.send("%sさんのCVは%sさんです。%sさんの音声作品を検索します。" %(message_l[1],cv_name,cv_name))
+                await search_asmr(cv_name, message)
+                await search_asmr_will(cv_name, message)
+            else:
+                await message.channel.send("声優さんの検索に失敗しちゃいました・・・")
+
+        if message_l[0] == '/dmm':
+            result = dmm.dmm_affiliate(" ".join(message_l[1:]))
+            await message.channel.send(result)
+    except:
+        print("error")
+
+    author = message.author.id
+    channel = message.channel.id
+    if (author == env.userID.seren or author == env.userID.annin or author == env.userID.culoto) & (channel == env.channelID.tachibana_asmr or channel == env.channelID.my_test):
         download_img(message.attachments[0].url, "images/image.png")
         print("downloaded")
         search_name, result, date = TASMRS.get_text.get_text("images/image.png")
         print(search_name, result, date)
         if (search_name != "") & (result == False):
             await message.channel.send("観測ご苦労さまです！\n%s時点で「%s」さんに関する音声作品はないようですね・・・" %(date, search_name))
-
-    message_l = message.content.split()
-    if message_l[0] == '/asmr':
-        await search_asmr(" ".join(message_l[1:]), message)
-        await search_asmr_will(" ".join(message_l[1:]), message)
-
-    if message_l[0] == '/idol_asmr':
-        cv_name = imasparql.get_idol_cv(message_l[1])
-        if cv_name != None:
-            print(cv_name)
-            await message.channel.send("%sさんのCVは%sさんです。%sさんの音声作品を検索します。" %(message_l[1],cv_name,cv_name))
-            await search_asmr(cv_name, message)
-            await search_asmr_will(cv_name, message)
-        else:
-            await message.channel.send("声優さんの検索に失敗しちゃいました・・・")
-
-    if message_l[0] == '/dmm':
-        result = dmm.dmm_affiliate(" ".join(message_l[1:]))
-        await message.channel.send(result)
 
 client.run(env.token.TOKEN)
